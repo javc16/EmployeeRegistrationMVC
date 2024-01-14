@@ -156,7 +156,7 @@ namespace EmployeeRegistrationMVC.Controllers
                             querySaveEmployee.Parameters.Add("@phone", SqlDbType.VarChar, 30).Value = employee.Phone;
                             querySaveEmployee.Parameters.Add("@zip", SqlDbType.VarChar, 30).Value = employee.Zip;
                             querySaveEmployee.Parameters.Add("@hireDate", SqlDbType.VarChar, 30).Value = employee.HireDate;
-                            querySaveEmployee.Parameters.Add("@id", SqlDbType.VarChar, 30).Value = id;
+                            querySaveEmployee.Parameters.Add("@id", SqlDbType.Int, 30).Value = id;
 
                             openCon.Open();
 
@@ -223,7 +223,7 @@ namespace EmployeeRegistrationMVC.Controllers
                     using (SqlCommand querySaveEmployee = new SqlCommand(saveEmployee))
                     {
                         querySaveEmployee.Connection = openCon;                   
-                        querySaveEmployee.Parameters.Add("@id", SqlDbType.VarChar, 30).Value = id;
+                        querySaveEmployee.Parameters.Add("@id", SqlDbType.Int, 30).Value = id;
 
                         openCon.Open();
 
