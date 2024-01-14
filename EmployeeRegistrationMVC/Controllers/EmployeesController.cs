@@ -207,7 +207,29 @@ namespace EmployeeRegistrationMVC.Controllers
             var employee = await _context.Employee.FindAsync(id);
             if (employee != null)
             {
-                _context.Employee.Remove(employee);
+                //_context.Employee.Remove(employee);
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+                Configuration = builder.Build();
+
+                string connectionString = Configuration.GetConnectionString("MyContextConnection");
+
+                using (SqlConnection openCon = new SqlConnection(connectionString))
+                {
+                    string saveEmployee = "DELETE FROM [dbo].[Employee] WHERE id=@id";
+
+                    using (SqlCommand querySaveEmployee = new SqlCommand(saveEmployee))
+                    {
+                        querySaveEmployee.Connection = openCon;                   
+                        querySaveEmployee.Parameters.Add("@id", SqlDbType.VarChar, 30).Value = id;
+
+                        openCon.Open();
+
+                        querySaveEmployee.ExecuteNonQuery();
+                    }
+                }
             }
 
             await _context.SaveChangesAsync();
