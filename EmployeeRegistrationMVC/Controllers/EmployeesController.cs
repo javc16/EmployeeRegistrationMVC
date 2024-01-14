@@ -72,8 +72,8 @@ namespace EmployeeRegistrationMVC.Controllers
             {
                 //_context.Add(employee);
                 var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
                 Configuration = builder.Build();
 
@@ -135,7 +135,34 @@ namespace EmployeeRegistrationMVC.Controllers
             {
                 try
                 {
-                    _context.Update(employee);
+                    //_context.Update(employee);
+                    var builder = new ConfigurationBuilder()
+                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+                    Configuration = builder.Build();
+
+                    string connectionString = Configuration.GetConnectionString("MyContextConnection");
+
+                    using (SqlConnection openCon = new SqlConnection(connectionString))
+                    {
+                        string saveEmployee = "UPDATE [dbo].[Employee] SET [LastName] =@lastName ,[FirstName] =@firstName ,[Phone] =@phone ,[Zip] =@zip ,[HireDate] =@hireDate WHERE id = @id";
+
+                        using (SqlCommand querySaveEmployee = new SqlCommand(saveEmployee))
+                        {
+                            querySaveEmployee.Connection = openCon;
+                            querySaveEmployee.Parameters.Add("@lastName", SqlDbType.VarChar, 30).Value = employee.LastName;
+                            querySaveEmployee.Parameters.Add("@firstName", SqlDbType.VarChar, 30).Value = employee.FirstName;
+                            querySaveEmployee.Parameters.Add("@phone", SqlDbType.VarChar, 30).Value = employee.Phone;
+                            querySaveEmployee.Parameters.Add("@zip", SqlDbType.VarChar, 30).Value = employee.Zip;
+                            querySaveEmployee.Parameters.Add("@hireDate", SqlDbType.VarChar, 30).Value = employee.HireDate;
+                            querySaveEmployee.Parameters.Add("@id", SqlDbType.VarChar, 30).Value = id;
+
+                            openCon.Open();
+
+                            querySaveEmployee.ExecuteNonQuery();
+                        }
+                    }
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
